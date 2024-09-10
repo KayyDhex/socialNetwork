@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TextInput, Button } from 'react-native'
 import React from 'react'
 import { Link } from 'expo-router'
 
-export default function Singup() {
+export default function Signup() {
     return (
         <View
             style={styles.container}
