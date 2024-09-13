@@ -1,4 +1,6 @@
+import { AuthProvider } from "@/context/authContext/AuthContext";
 import { Stack } from "expo-router";
+import "../utils/firebaseConfig";
 
 export default function RootLayout() {
 
@@ -6,16 +8,18 @@ export default function RootLayout() {
   //             -> ->  - Stack2
   //             -> ->  - Stack3
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: 'Inicio' }} />
-      <Stack.Screen name="singin" options={{ title: 'Registrate' }} />
-      <Stack.Screen name="singup" options={{ title: 'Ingresa' }} />
-      {/* Cuando el usuario se loggea */}
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <AuthProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false
+        }}
+      >
+        <Stack.Screen name="index" options={{ title: 'Inicio' }} />
+        <Stack.Screen name="singin" options={{ title: 'Registrate' }} />
+        <Stack.Screen name="singup" options={{ title: 'Ingresa' }} />
+        {/* Cuando el usuario se loggea */}
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+    </AuthProvider>
   );
 }

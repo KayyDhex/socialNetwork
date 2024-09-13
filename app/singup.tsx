@@ -1,8 +1,14 @@
 import { View, Text, StyleSheet, TextInput, Button } from 'react-native'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'expo-router'
+import { AuthContext } from '@/context/authContext/AuthContext';
 
 export default function Singup() {
+
+    const { signUp } = useContext(AuthContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
     return (
         <View
             style={styles.container}
@@ -12,23 +18,21 @@ export default function Singup() {
                     fontWeight: 'bold',
                     fontSize: 24
                 }}
-            >Ingresa</Text>
+            >Registrate</Text>
             <TextInput
-                value='hola'
+                value={email}
+                onChangeText={setEmail}
                 style={styles.input}
             />
             <TextInput
-                value='hola'
+                value={password}
+                onChangeText={setPassword}
                 style={styles.input}
             />
-            <Link
-                href={"/(tabs)/home"}
-                asChild
-            >
-                <Button
-                    title='Ingresar'
-                />
-            </Link>
+            <Button
+                title='Ingresar'
+                onPress={() => signUp(email, password)}
+            />
         </View>
     )
 }
