@@ -15,8 +15,8 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: 'Inicio' }} />
-        <Stack.Screen name="signin" options={{ title: 'Registrate' }} />
-        <Stack.Screen name="signup" options={{ title: 'Ingresa' }} />
+        <Stack.Screen name="signin" options={{ title: 'Ingresa' }} />
+        <Stack.Screen name="signup" options={{ title: 'Registrate' }} />
         {/* Cuando el usuario se loggea */}
         <Stack.Screen name="(tabs)" />
       </Stack>

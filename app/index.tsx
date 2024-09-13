@@ -29,14 +29,14 @@ export default function Index() {
                 contentFit="contain"
                 transition={1000}
             />
-            <Link href={"/signup"} asChild>
+            <Link href={"/signin"} asChild>
                 <TouchableOpacity
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>Iniciar sesion</Text>
                 </TouchableOpacity>
             </Link>
-            <Link href={"/signin"} asChild>
+            <Link href={"/signup"} asChild>
                 <TouchableOpacity
                     style={styles.button}
                 >

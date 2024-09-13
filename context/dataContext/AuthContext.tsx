@@ -1,7 +1,8 @@
 import { createContext, useEffect, useReducer } from "react";
 import { authReducer } from "./authReducer";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/utils/firebaseConfig";
+import { auth, db } from "@/utils/firebaseConfig";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 
 export interface AuthState {
     user?: any
@@ -25,19 +26,22 @@ export function AuthProvider({ children }: any) {
 
 
     useEffect(() => {
-        // signUp("hans@correa.com", "123456789");
-        signIn("hans@correa.com", "12");
-        console.log("HOLA MUNDO")
+        // signUp("hans.correa2@correa.com", "123456789");
+        signIn("hans.correa2@correa.com", "123456789");
+        // console.log("HOLA MUNDO")
     }, []);
 
     const signIn = async (email: string, password: string): Promise<boolean> => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const docRef = doc(db, "Users", userCredential.user.uid);
+            const docSnap = await getDoc(docRef);
 
-            console.log({
-                userCredential,
-                user: userCredential.user
-            })
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+            } else {
+                console.log("No such document!");
+            }
             return true;
         } catch (error: any) {
             const errorCode = error.code;
@@ -54,9 +58,17 @@ export function AuthProvider({ children }: any) {
 
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password)
-            console.log({
-                response
-            })
+            // Obtener el UID del usuario recién creado
+            const user = response.user;
+            const uid = user.uid;
+
+            // Guardar los datos del usuario en Firestore
+            await setDoc(doc(db, "Users", uid), {
+                firstname: "hans",
+                lastname: "correa",
+                email,
+            });
+
             return true;
         } catch (error: any) {
             const errorCode = error.code;
