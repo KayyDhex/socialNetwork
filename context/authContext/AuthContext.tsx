@@ -24,10 +24,9 @@ export function AuthProvider({ children }: any) {
 
     const [state, dispatch] = useReducer(authReducer, authStateDefault);
 
-
     useEffect(() => {
         // signUp("hans.correa2@correa.com", "123456789");
-        signIn("hans.correa2@correa.com", "123456789");
+        // signIn("hans.correa2@correa.com", "123456789");
         // console.log("HOLA MUNDO")
     }, []);
 

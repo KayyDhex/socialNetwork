@@ -4,16 +4,14 @@ import { Link } from 'expo-router'
 
 export default function Home() {
     return (
-        <View>
-            <Text>Home</Text>
-            <Link
-                href={"/(tabs)/home/message"}
-                asChild
-            >
-                <Button
-                    title='Mensajes'
-                />
-            </Link>
+        <View
+            style={{
+                flex: 1,
+                paddingHorizontal: 20,
+                paddingVertical: 10
+            }}
+        >
+            <Text>Posts</Text>
         </View>
     )
 }

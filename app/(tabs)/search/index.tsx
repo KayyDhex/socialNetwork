@@ -3,8 +3,14 @@ import React from 'react'
 
 export default function Search() {
     return (
-        <View>
-            <Text>Search</Text>
+        <View
+            style={{
+                flex: 1,
+                paddingHorizontal: 20,
+                paddingVertical: 10
+            }}
+        >
+            <Text>Buscar</Text>
         </View>
     )
 }

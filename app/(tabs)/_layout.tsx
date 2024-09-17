@@ -15,35 +15,35 @@ export default function _layout() {
                 name='home'
                 options={{
                     title: "Inicio",
-                    // tabBarIcon: ({ color }) => (<FontAwesome5 name="photo-video" size={24} color={color} />)
+                    tabBarIcon: ({ color, size }) => (<FontAwesome5 name="home" size={size} color={color} />)
                 }}
             />
             <Tabs.Screen
                 name='search'
                 options={{
                     title: "Buscar",
-                    // tabBarIcon: ({ color }) => (<FontAwesome5 name="photo-video" size={24} color={color} />)
+                    tabBarIcon: ({ color, size }) => (<FontAwesome5 name="search" size={size} color={color} />)
                 }}
             />
             <Tabs.Screen
                 name='newPost'
                 options={{
                     title: "Nuevo Post",
-                    // tabBarIcon: ({ color }) => (<FontAwesome5 name="photo-video" size={24} color={color} />)
+                    tabBarIcon: ({ color, size }) => (<FontAwesome5 name="plus-circle" size={size} color={color} />)
                 }}
             />
             <Tabs.Screen
                 name='reels'
                 options={{
                     title: "Reels",
-                    // tabBarIcon: ({ color }) => (<FontAwesome5 name="photo-video" size={24} color={color} />)
+                    tabBarIcon: ({ color, size }) => (<FontAwesome5 name="photo-video" size={size} color={color} />)
                 }}
             />
             <Tabs.Screen
                 name='profile'
                 options={{
                     title: "Perfil",
-                    // tabBarIcon: ({ color }) => (<FontAwesome5 name="photo-video" size={24} color={color} />)
+                    tabBarIcon: ({ color, size }) => (<FontAwesome5 name="user-alt" size={size} color={color} />)
                 }}
             />
         </Tabs>

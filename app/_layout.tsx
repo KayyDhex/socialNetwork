@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import "../utils/firebaseConfig";
-import { AuthProvider } from "@/context/dataContext/AuthContext";
+import { AuthProvider } from "@/context/authContext/AuthContext";
+import { PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
 
@@ -8,18 +9,21 @@ export default function RootLayout() {
   //             -> ->  - Stack2
   //             -> ->  - Stack3
   return (
-    <AuthProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen name="index" options={{ title: 'Inicio' }} />
-        <Stack.Screen name="signin" options={{ title: 'Ingresa' }} />
-        <Stack.Screen name="signup" options={{ title: 'Registrate' }} />
-        {/* Cuando el usuario se loggea */}
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </AuthProvider>
+    <PaperProvider>
+      <AuthProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false
+          }}
+          initialRouteName="signin"
+        >
+          <Stack.Screen name="index" options={{ title: 'Ingresa' }} />
+          {/* <Stack.Screen name="signin" options={{ title: 'Ingresa' }} /> */}
+          <Stack.Screen name="signup" options={{ title: 'Registrate' }} />
+          {/* Cuando el usuario se loggea */}
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </AuthProvider>
+    </PaperProvider>
   );
 }

@@ -12,7 +12,7 @@ export default function Signup() {
                     fontWeight: 'bold',
                     fontSize: 24
                 }}
-            >Ingresa</Text>
+            >Registrate</Text>
             <TextInput
                 value='hola'
                 style={styles.input}
