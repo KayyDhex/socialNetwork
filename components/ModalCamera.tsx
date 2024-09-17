@@ -26,9 +26,7 @@ export default function ModalCamera({
 
         onSave(photo);
         onClose();
-        console.log({
-            photo
-        })
+        
     }
 
     return (

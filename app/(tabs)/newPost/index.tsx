@@ -4,10 +4,12 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ModalCamera from '@/components/ModalCamera';
+import { Image } from 'expo-image';
 
 export default function NewPost() {
 
     const [isVisible, setIsVisble] = useState(false);
+    const [currentPhoto, setCurrentPhoto] = useState(undefined as any);
 
     return (
         <ScrollView
@@ -36,14 +38,28 @@ export default function NewPost() {
                         alignItems: 'center'
                     }}
                 >
-                    <FontAwesome5 name="plus" size={80} color="white" />
-                    <Text
-                        style={{
-                            fontWeight: '800',
-                            fontSize: 18,
-                            color: 'white'
-                        }}
-                    >Seleccionar foto</Text>
+                    {
+                        currentPhoto && currentPhoto.uri ?
+                            <Image
+                                style={{
+                                    width: '100%',
+                                    height: "100%"
+                                }}
+                                source={{ uri: currentPhoto.uri }}
+                                contentFit="cover"
+                                transition={1000}
+                            /> :
+                            <>
+                                <FontAwesome5 name="plus" size={80} color="white" />
+                                <Text
+                                    style={{
+                                        fontWeight: '800',
+                                        fontSize: 18,
+                                        color: 'white'
+                                    }}
+                                >Seleccionar foto</Text>
+                            </>
+                    }
                 </View>
             </TouchableOpacity>
             <TextInput
@@ -80,7 +96,9 @@ export default function NewPost() {
             </TouchableOpacity>
             <ModalCamera
                 isVisible={isVisible}
-                onSave={() => { }}
+                onSave={(photo) => {
+                    setCurrentPhoto(photo);
+                }}
                 onClose={() => { setIsVisble(false) }}
             />
         </ScrollView >
