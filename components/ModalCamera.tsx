@@ -1,7 +1,10 @@
 import { CameraView, CameraType, useCameraPermissions, CameraViewRef } from 'expo-camera';
 import { View, Text, Modal, StyleSheet, Button, TouchableOpacity } from 'react-native'
 import React, { useRef, useState } from 'react'
-
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as ImagePicker from 'expo-image-picker';
 export interface ModalCameraProps {
     isVisible: boolean,
     onClose: () => void,
@@ -26,8 +29,25 @@ export default function ModalCamera({
 
         onSave(photo);
         onClose();
-        
+
     }
+
+    const handlePickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            onSave(result.assets[0]);
+            onClose();
+        }
+    };
 
     return (
         <Modal
@@ -49,13 +69,13 @@ export default function ModalCamera({
                         >
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.button} onPress={() => setFacing(prev => prev == 'front' ? 'back' : 'front')}>
-                                    <Text style={styles.text}>Flip Camera</Text>
+                                    <Ionicons name="refresh-circle" size={50} color="white" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
-                                    <Text style={styles.text}>Foto</Text>
+                                    <MaterialCommunityIcons name="circle-slice-8" size={75} color="white" />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.button} onPress={onClose}>
-                                    <Text style={styles.text}>Cerrar</Text>
+                                <TouchableOpacity style={styles.button} onPress={handlePickImage}>
+                                    <MaterialIcons name="cloud-circle" size={50} color="white" />
                                 </TouchableOpacity>
                             </View>
                         </CameraView>
