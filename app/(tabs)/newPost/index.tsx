@@ -1,15 +1,53 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ModalCamera from '@/components/ModalCamera';
 import { Image } from 'expo-image';
+import * as Location from 'expo-location';
 
 export default function NewPost() {
 
     const [isVisible, setIsVisble] = useState(false);
     const [currentPhoto, setCurrentPhoto] = useState(undefined as any);
+
+    const [location, setLocation] = useState(null as Location.LocationObject | null);
+    const [errorMsg, setErrorMsg] = useState("");
+
+    useEffect(() => {
+        (async () => {
+
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            console.log("Mi ubicacion: ", {
+                location
+            })
+            setLocation(location);
+        })();
+    }, []);
+
+    const getAddress = async () => {
+
+        if (location == null) return;
+
+        try {
+            console.log(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${location.coords?.latitude}&lon=${location.coords?.longitude}`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${location.coords?.latitude}&lon=${location.coords?.longitude}`)
+
+            const data = await response.json();
+            console.log({
+                data
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <ScrollView
@@ -73,7 +111,9 @@ export default function NewPost() {
                     minHeight: 100
                 }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={getAddress}
+            >
                 <View
                     style={{
                         flexDirection: 'row',
