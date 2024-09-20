@@ -56,7 +56,7 @@ export default function NewPost() {
         await newPost({
             address: locationText,
             description,
-            image: currentPhoto.base64,
+            image: currentPhoto.uri,
             date: new Date()
         })
     }

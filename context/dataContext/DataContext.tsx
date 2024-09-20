@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { dataReducer } from "./dataReducer";
-import { getStorage, ref, uploadString } from "firebase/storage";
+import { getStorage, ref, uploadBytes, uploadString } from "firebase/storage";
 import { DefaultResponse, PostProps } from "@/interfaces/postsInterfaces";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/utils/firebaseConfig";
@@ -31,11 +31,14 @@ export function DataProvider({ children }: any) {
     }, []);
 
 
-    const uploadImage = async (image64: string) => {
+    const uploadImage = async (uri: string) => {
         const storage = getStorage();
         const storageRef = ref(storage, 'posts');
+
         try {
-            const snapshot = await uploadString(storageRef, image64)
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const snapshot = await uploadBytes(storageRef, blob)
             console.log('Uploaded a raw string!');
             console.log({
                 snapshot
@@ -53,7 +56,9 @@ export function DataProvider({ children }: any) {
     const newPost = async (newPost: PostProps): Promise<DefaultResponse> => {
         try {
             const urlImage = await uploadImage(newPost.image);
-
+            console.log({
+                urlImage
+            })
             const docRef = await addDoc(collection(db, "posts"), {
                 ...newPost,
                 image: urlImage,

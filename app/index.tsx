@@ -14,13 +14,13 @@ export default function Signin() {
     const { signIn } = useContext(AuthContext);
 
     const handleLogin = async () => {
-        router.replace('/(tabs)/home');
-        // const response = await signIn(email, password);
-        // if (response) {
-        //     router.replace('/(tabs)/home');
-        // } else {
-        //     console.log("Hubo un error ingresando")
-        // }
+        // router.replace('/(tabs)/home');
+        const response = await signIn(email, password);
+        if (response) {
+            router.replace('/(tabs)/home');
+        } else {
+            console.log("Hubo un error ingresando")
+        }
     }
 
     return (
