@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import React, { useContext, useEffect, useState } from 'react'
-import { TextInput } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ModalCamera from '@/components/ModalCamera';
 import { Image } from 'expo-image';
@@ -10,9 +10,10 @@ import { DataContext } from '@/context/dataContext/DataContext';
 
 export default function NewPost() {
 
-    const { } = useContext(DataContext);
+    const { newPost } = useContext(DataContext);
     const [isVisible, setIsVisble] = useState(false);
     const [currentPhoto, setCurrentPhoto] = useState(undefined as any);
+    const [description, setDescription] = useState("");
 
     const [location, setLocation] = useState(null as Location.LocationObject | null);
     const [locationText, setLocationText] = useState("");
@@ -49,6 +50,15 @@ export default function NewPost() {
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const handleSavePost = async () => {
+        await newPost({
+            address: locationText,
+            description,
+            image: currentPhoto.base64,
+            date: new Date()
+        })
     }
 
     return (
@@ -105,6 +115,8 @@ export default function NewPost() {
             <TextInput
                 mode="outlined"
                 multiline
+                value={description}
+                onChangeText={setDescription}
                 numberOfLines={4}
                 label='Descripcion'
                 placeholder='Escribe la descripcion del post...'
@@ -139,6 +151,11 @@ export default function NewPost() {
                 <Text>
                     {locationText}
                 </Text>
+                <Button
+                    onPress={handleSavePost}
+                >
+                    <Text>Guardar post</Text>
+                </Button>
                 {/* </View> */}
             </TouchableOpacity>
             <ModalCamera

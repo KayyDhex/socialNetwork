@@ -37,6 +37,7 @@ export default function ModalCamera({
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
+            base64: true,
             aspect: [1, 1],
             quality: 1,
         });

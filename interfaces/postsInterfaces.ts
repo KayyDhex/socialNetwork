@@ -7,3 +7,8 @@ export interface PostProps {
     postedBy?: string,
     likes?: number,
 }
+
+export interface DefaultResponse {
+    isSuccess: boolean;
+    message: string;
+}

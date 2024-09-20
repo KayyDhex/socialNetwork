@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { dataReducer } from "./dataReducer";
 import { getStorage, ref, uploadString } from "firebase/storage";
-import { PostProps } from "@/interfaces/postsInterfaces";
+import { DefaultResponse, PostProps } from "@/interfaces/postsInterfaces";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/utils/firebaseConfig";
 import { AuthContext } from "../authContext/AuthContext";
@@ -16,6 +16,7 @@ const dataStateDefault = {
 
 interface DataContextProps {
     state: DataState,
+    newPost: (newPost: PostProps) => Promise<DefaultResponse>
 }
 
 export const DataContext = createContext({} as DataContextProps);
@@ -49,7 +50,7 @@ export function DataProvider({ children }: any) {
     }
 
 
-    const newPost = async (newPost: PostProps) => {
+    const newPost = async (newPost: PostProps): Promise<DefaultResponse> => {
         try {
             const urlImage = await uploadImage(newPost.image);
 
@@ -85,6 +86,7 @@ export function DataProvider({ children }: any) {
     return <DataContext.Provider
         value={{
             state,
+            newPost
         }}
     >
         {children}
