@@ -1,18 +1,21 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { TextInput } from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ModalCamera from '@/components/ModalCamera';
 import { Image } from 'expo-image';
 import * as Location from 'expo-location';
+import { DataContext } from '@/context/dataContext/DataContext';
 
 export default function NewPost() {
 
+    const { } = useContext(DataContext);
     const [isVisible, setIsVisble] = useState(false);
     const [currentPhoto, setCurrentPhoto] = useState(undefined as any);
 
     const [location, setLocation] = useState(null as Location.LocationObject | null);
+    const [locationText, setLocationText] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
 
     useEffect(() => {
@@ -25,9 +28,7 @@ export default function NewPost() {
             }
 
             let location = await Location.getCurrentPositionAsync({});
-            console.log("Mi ubicacion: ", {
-                location
-            })
+
             setLocation(location);
         })();
     }, []);
@@ -42,8 +43,9 @@ export default function NewPost() {
 
             const data = await response.json();
             console.log({
-                data
+                data: data.display_name
             })
+            setLocationText(data.display_name);
         } catch (error) {
             console.log(error)
         }
@@ -114,6 +116,7 @@ export default function NewPost() {
             <TouchableOpacity
                 onPress={getAddress}
             >
+                {/* <View> */}
                 <View
                     style={{
                         flexDirection: 'row',
@@ -133,6 +136,10 @@ export default function NewPost() {
                         <MaterialIcons name="chevron-right" size={24} color="black" />
                     </View>
                 </View>
+                <Text>
+                    {locationText}
+                </Text>
+                {/* </View> */}
             </TouchableOpacity>
             <ModalCamera
                 isVisible={isVisible}

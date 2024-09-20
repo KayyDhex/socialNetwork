@@ -36,6 +36,7 @@ export function AuthProvider({ children }: any) {
             const docRef = doc(db, "Users", userCredential.user.uid);
             const docSnap = await getDoc(docRef);
 
+            dispatch({ type: "login", payload: userCredential.user })
             if (docSnap.exists()) {
                 console.log("Document data:", docSnap.data());
             } else {
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: any) {
                 lastname: "correa",
                 email,
             });
-
+            dispatch({ type: "login", payload: response.user })
             return true;
         } catch (error: any) {
             const errorCode = error.code;
