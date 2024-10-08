@@ -3,9 +3,10 @@ import { authReducer } from "./authReducer";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/utils/firebaseConfig";
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 export interface AuthState {
-    user?: any
+    user?: any,
 }
 
 const authStateDefault = {
@@ -14,8 +15,9 @@ const authStateDefault = {
 
 interface AuthContextProps {
     state: AuthState,
-    signUp: (email: string, password: string) => Promise<boolean>,
+    signUp: (email: string, password: string, username: string) => Promise<boolean>,
     signIn: (email: string, password: string) => Promise<boolean>,
+    updateUser: (user: any) => Promise<boolean>
 }
 
 export const AuthContext = createContext({} as AuthContextProps);
@@ -27,21 +29,25 @@ export function AuthProvider({ children }: any) {
     useEffect(() => {
         // signUp("hans.correa2@correa.com", "123456789");
         // signIn("hans.correa2@correa.com", "123456789");
-        // console.log("HOLA MUNDO")
-    }, []);
+        console.log("USUARIO: ", {
+            user: state.user
+        })
+    }, [state]);
 
     const signIn = async (email: string, password: string): Promise<boolean> => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            const docRef = doc(db, "Users", userCredential.user.uid);
+
+            const docRef = doc(db, "users", userCredential.user.uid);
             const docSnap = await getDoc(docRef);
 
-            dispatch({ type: "login", payload: userCredential.user })
-            if (docSnap.exists()) {
-                console.log("Document data:", docSnap.data());
-            } else {
-                console.log("No such document!");
-            }
+            dispatch({
+                type: "login", payload: {
+                    ...userCredential.user,
+                    ...docSnap.data()
+                }
+            })
+
             return true;
         } catch (error: any) {
             const errorCode = error.code;
@@ -54,7 +60,7 @@ export function AuthProvider({ children }: any) {
         }
     }
 
-    const signUp = async (email: string, password: string): Promise<boolean> => {
+    const signUp = async (email: string, password: string, username: string): Promise<boolean> => {
 
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password)
@@ -63,12 +69,17 @@ export function AuthProvider({ children }: any) {
             const uid = user.uid;
 
             // Guardar los datos del usuario en Firestore
-            await setDoc(doc(db, "Users", uid), {
-                firstname: "hans",
-                lastname: "correa",
+            await setDoc(doc(db, "users", uid), {
                 email,
+                username
             });
-            dispatch({ type: "login", payload: response.user })
+
+            dispatch({
+                type: "login", payload: {
+                    ...response.user,
+                    username
+                }
+            })
             return true;
         } catch (error: any) {
             const errorCode = error.code;
@@ -81,11 +92,59 @@ export function AuthProvider({ children }: any) {
         }
     }
 
+    const uploadImage = async (uri: string) => {
+        const storage = getStorage();
+        const storageRef = ref(storage, 'avatars/' + (state.user.uid ?? "") + "-" + Date.now());
+
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+
+            const snapshot = await uploadBytes(storageRef, blob)
+            const url = await getDownloadURL(storageRef);
+
+            return url;
+        } catch (error) {
+            console.log(error)
+            return ""
+        }
+    }
+
+    const updateUser = async (user: any) => {
+        try {
+            // Guardar los datos del usuario en Firestore
+            let image = "";
+            const validation = typeof user.photo != "string"
+            if (validation) {
+                image = await uploadImage(user.photo.uri);
+            }
+
+            await setDoc(doc(db, "users", state.user.uid), {
+                ...user,
+                photo: validation ? image : user.photo
+            });
+            const docRef = doc(db, "users", state.user.uid);
+            const docSnap = await getDoc(docRef);
+
+            dispatch({
+                type: "login", payload: {
+                    ...state.user,
+                    ...docSnap.data()
+                }
+            })
+            return true;
+        } catch (error) {
+            console.log("Error al actualizar: ", error)
+            return false;
+        }
+    }
+
     return <AuthContext.Provider
         value={{
             state,
             signIn,
-            signUp
+            signUp,
+            updateUser
         }}
     >
         {children}

@@ -1,10 +1,17 @@
-import { View, Text, ScrollView } from 'react-native'
-import React from 'react';
-import { Avatar, Button } from 'react-native-paper';
+import { View, ScrollView, FlatList, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useContext } from 'react';
+import { Avatar, Button, Card, Text } from 'react-native-paper';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { DataContext } from '@/context/dataContext/DataContext';
+import { Image } from 'expo-image';
+import { AuthContext } from '@/context/authContext/AuthContext';
+import AvatarView from '@/components/AvatarView';
 
 export default function Profile() {
+
+    const { state: { myPosts } } = useContext(DataContext);
+    const { state: { user } } = useContext(AuthContext)
 
     const TextInfo = ({ title, number }: any) => (
         <View
@@ -20,6 +27,10 @@ export default function Profile() {
         </View>
     )
 
+    const handlePress = (id: string) => {
+        router.navigate({ pathname: "/(tabs)/profile/detail/[id]", params: { id } })
+    }
+
     return (
         <View
             style={{ flex: 1, margin: 20 }}
@@ -27,10 +38,18 @@ export default function Profile() {
             <View
                 style={{ flexDirection: 'row', gap: 25, alignContent: 'center', alignItems: 'center' }}
             >
-                <Avatar.Text label='H' size={100} />
-                <TextInfo title="Posts" number={100} />
-                <TextInfo title="Posts" number={100} />
-                <TextInfo title="Posts" number={100} />
+                {
+                    (user.photo && user.photo != "") ?
+                        <AvatarView
+                            size={100}
+                            photo={user.photo}
+                        />
+                        :
+                        <Avatar.Text label={user.username.substring(0, 1).toUpperCase()} size={100} />
+                }
+                <TextInfo title="Posts" number={myPosts.length} />
+                <TextInfo title="Seguidores" number={0} />
+                <TextInfo title="Seguidos" number={0} />
             </View>
             <View
                 style={{
@@ -45,9 +64,13 @@ export default function Profile() {
                         fontSize: 16
                     }}
                 >
-                    Hans Camilo Correa
+                    {user.username}
                 </Text>
-                <Text>Ingeniero Informatico</Text>
+                <Text>{user.name ?? ""}</Text>
+                {
+                    user.bio &&
+                    <Text>{user.bio}</Text>
+                }
                 <Text>Seguido por </Text>
                 <View
                     style={{
@@ -56,7 +79,7 @@ export default function Profile() {
                         gap: 10
                     }}
                 >
-                    <Link href={"/(tabs)/profile/editProfile"} asChild>
+                    <Link href={"/(tabs)/profile/edit"} asChild>
                         <Button
                             mode='contained'
                             style={{ flex: 1 }}
@@ -72,16 +95,53 @@ export default function Profile() {
                     </Button>
                 </View>
             </View>
-            <ScrollView
+            <View
                 style={{
-                    flexDirection: 'row',
+                    flex: 1,
                 }}
-                horizontal={true}
             >
-                {
-                    Array.from({ length: 10 }).map((value, i) => <Avatar.Icon icon={"account"} key={i} size={60} style={{ marginHorizontal: 5 }} />)
-                }
-            </ScrollView>
+                <FlatList style={{ flex: 1 }}
+                    numColumns={3}                  // set number of columns 
+                    data={myPosts}
+                    columnWrapperStyle={style.row}
+                    // @ts-ignore
+                    keyExtractor={(item, index) => index} //left={LeftContent}
+                    renderItem={({ item, index }) => {
+                        const lastItem = index === myPosts.length - 1;
+                        console.log({
+                            // @ts-ignore
+                            image: item.image
+                        })
+                        return <TouchableOpacity
+                            style={{
+                                flex: 1,
+                                maxWidth: '33%',
+                                aspectRatio: 1 / 1,
+                                marginHorizontal: 1
+                            }}
+                            onPress={() => handlePress(item?.id ?? "")}
+                        >
+                            <Image
+                                style={{
+                                    width: '100%',
+                                    height: '100%'
+                                }}
+                                // @ts-ignore
+                                source={{ uri: item.image ?? "https://picsum.photos/700" }}
+                                contentFit="cover"
+                                transition={1000}
+                            />
+                        </TouchableOpacity>
+                    }}
+                />
+            </View>
         </View>
     )
 }
+
+const style = StyleSheet.create({
+    row: {
+        flex: 1,
+        marginVertical: 1
+    }
+});

@@ -7,6 +7,8 @@ import ModalCamera from '@/components/ModalCamera';
 import { Image } from 'expo-image';
 import * as Location from 'expo-location';
 import { DataContext } from '@/context/dataContext/DataContext';
+import CustomModal from '@/components/CustomModal';
+import { ModalProps } from '@/interfaces/postsInterfaces';
 
 export default function NewPost() {
 
@@ -18,6 +20,7 @@ export default function NewPost() {
     const [location, setLocation] = useState(null as Location.LocationObject | null);
     const [locationText, setLocationText] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+    const [modal, setModal] = useState({ visible: false } as ModalProps);
 
     useEffect(() => {
         (async () => {
@@ -53,12 +56,60 @@ export default function NewPost() {
     }
 
     const handleSavePost = async () => {
-        await newPost({
+        setModal({
+            visible: true,
+            type: 'loading',
+            title: 'Guardando post',
+            textBody: 'Espera un momento...'
+        })
+        
+        const response = await newPost({
             address: locationText,
             description,
-            image: currentPhoto.uri,
+            image: {
+                uri: currentPhoto.uri,
+                name: currentPhoto.name
+            },
             date: new Date()
         })
+
+        if (response) {
+            setCurrentPhoto(undefined);
+            setDescription("")
+            setLocationText("");
+            setModal({
+                visible: true,
+                type: 'success',
+                title: 'Guardado con exito',
+                onAcept() {
+                    setModal({
+                        visible: false,
+                    })
+                },
+                onClose() {
+                    setModal({
+                        visible: false,
+                    })
+                },
+            })
+        } else {
+            setModal({
+                visible: true,
+                type: 'error',
+                title: 'Hubo un error',
+                textBody: "vuelve a intentar",
+                onAcept() {
+                    setModal({
+                        visible: false,
+                    })
+                },
+                onClose() {
+                    setModal({
+                        visible: false,
+                    })
+                },
+            })
+        }
     }
 
     return (
@@ -164,6 +215,9 @@ export default function NewPost() {
                     setCurrentPhoto(photo);
                 }}
                 onClose={() => { setIsVisble(false) }}
+            />
+            <CustomModal
+                {...modal}
             />
         </ScrollView >
     )

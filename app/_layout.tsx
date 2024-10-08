@@ -1,15 +1,28 @@
 import { Stack } from "expo-router";
 import "../utils/firebaseConfig";
 import { AuthProvider } from "@/context/authContext/AuthContext";
-import { PaperProvider } from "react-native-paper";
+import { MD3LightTheme, PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
 
-  /// -> -> -> -> -> ->   - Stack1
-  //             -> ->  - Stack2
-  //             -> ->  - Stack3
+  const theme = {
+    ...MD3LightTheme,
+    roundness: 10,
+
+    colors: {
+      ...MD3LightTheme.colors,
+      primary: '#E90935',
+      primaryContainer: "#FFF",
+      secondary: '#383838',
+      secondaryContainer: "#FFF",
+      tertiary: '#252537',
+      surface: "#919EAB52",
+      background: "#FFFFFF"
+    }
+  };
+
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <AuthProvider>
         <Stack
           screenOptions={{

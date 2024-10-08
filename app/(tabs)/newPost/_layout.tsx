@@ -11,6 +11,7 @@ export default function RootLayout() {
       <Stack.Screen name="index"
         options={{
           title: "Instagram",
+          headerShown: false
         }}
       />
       {/* <Stack.Screen name="message"

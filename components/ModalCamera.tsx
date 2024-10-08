@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export interface ModalCameraProps {
     isVisible: boolean,
     onClose: () => void,
@@ -20,6 +21,7 @@ export default function ModalCamera({
     const [facing, setFacing] = useState<CameraType>('back');
     const cameraRef = useRef<any>()
     const [permission, requestPermission] = useCameraPermissions();
+    const { top } = useSafeAreaInsets()
 
     const handleTakePhoto = async () => {
         const photo = await cameraRef.current.takePictureAsync({
@@ -63,6 +65,14 @@ export default function ModalCamera({
                     </View>
                     :
                     <View style={styles.container}>
+                        <TouchableOpacity style={{
+                            position: 'absolute',
+                            top: top + 20,
+                            left: 20,
+                            zIndex: 1000
+                        }} onPress={onClose}>
+                            <Ionicons name="close-sharp" size={30} color="white" />
+                        </TouchableOpacity>
                         <CameraView
                             ref={cameraRef}
                             style={styles.camera}
