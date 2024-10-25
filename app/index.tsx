@@ -17,7 +17,7 @@ export default function Signin() {
     const [modal, setModal] = useState({ visible: false } as ModalProps);
 
     useEffect(() => {
-        // handleLoginAuto();
+        handleLoginAuto();
     }, [])
 
     const handleLoginAuto = async () => {
@@ -27,7 +27,7 @@ export default function Signin() {
             title: 'Validando usuario',
             textBody: 'Espera un momento...'
         })
-        const response = await signIn("hans.correa@correa.com", "123456789");
+        const response = await signIn("j@j.com", "123456");
         if (response) {
             setModal({
                 visible: false,

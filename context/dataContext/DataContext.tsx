@@ -1,26 +1,29 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import { dataReducer } from "./dataReducer";
 import { getDownloadURL, getStorage, ref, uploadBytes, uploadString } from "firebase/storage";
 import { DefaultResponse, PostProps } from "@/interfaces/postsInterfaces";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "@/utils/firebaseConfig";
 import { AuthContext } from "../authContext/AuthContext";
 
 export interface DataState {
     myPosts: [],
     allPosts: [],
-    allUsers: []
+    allUsers: [],
+    allChats: []
 }
 
 const dataStateDefault: DataState = {
     myPosts: [],
     allPosts: [],
-    allUsers: []
+    allUsers: [],
+    allChats: []
 }
 
 interface DataContextProps {
     state: DataState,
-    newPost: (newPost: PostProps) => Promise<DefaultResponse>
+    newPost: (newPost: PostProps) => Promise<DefaultResponse>;
+    addMessageToChat: (chatId: string, newMessage: any) => Promise<void>
 }
 
 export const DataContext = createContext({} as DataContextProps);
@@ -28,7 +31,7 @@ export const DataContext = createContext({} as DataContextProps);
 export function DataProvider({ children }: any) {
 
     const [state, dispatch] = useReducer(dataReducer, dataStateDefault);
-    const { state: { user } } = useContext(AuthContext)
+    const { state: { user } } = useContext(AuthContext);
 
     useEffect(() => {
         allPost();
@@ -36,10 +39,56 @@ export function DataProvider({ children }: any) {
     }, []);
 
     useEffect(() => {
-        console.log({
-            state: state.allPosts
-        })
-    }, [state])
+        if (!user || state.allUsers.length == 0) return;
+        const unsubscribe = openListener();
+        return () => unsubscribe && unsubscribe();
+    }, [user, state.allUsers])
+
+    const openListener = () => {
+        const messagesRef = collection(db, "chat");
+        const q = query(messagesRef, where("users", "array-contains", user.uid));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+
+            const newMessages: any = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+
+            const chats = newMessages.map((item: any) => {
+                const { users } = item
+                const toSend = state.allUsers.find((toSend: any) => {
+                    const userToFind = users.find((value: any) => value != user.uid);
+                    return toSend.id == userToFind
+                })
+
+                return {
+                    ...item,
+                    toSend
+                }
+            })
+
+            dispatch({ type: "getAllChats", payload: chats })
+
+        }, (error: any) => {
+            console.error("Error fetching messages:", error);
+        });
+
+        return unsubscribe;
+    };
+
+    const addMessageToChat = async (chatId: string, newMessage: any) => {
+
+        const chatDocRef = doc(db, "chat", chatId);
+        try {
+            await updateDoc(chatDocRef, {
+                messages: arrayUnion(newMessage),
+            });
+
+            console.log("Message added to chat successfully!");
+        } catch (error) {
+            console.error("Error adding message to chat:", error);
+        }
+    };
 
     const uploadImage = async (uri: string, name: string) => {
         const storage = getStorage();
@@ -155,7 +204,8 @@ export function DataProvider({ children }: any) {
     return <DataContext.Provider
         value={{
             state,
-            newPost
+            newPost,
+            addMessageToChat
         }}
     >
         {children}

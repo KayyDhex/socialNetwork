@@ -29,9 +29,9 @@ export function AuthProvider({ children }: any) {
     useEffect(() => {
         // signUp("hans.correa2@correa.com", "123456789");
         // signIn("hans.correa2@correa.com", "123456789");
-        console.log("USUARIO: ", {
-            user: state.user
-        })
+        // console.log("USUARIO: ", {
+        //     user: state.user
+        // })
     }, [state]);
 
     const signIn = async (email: string, password: string): Promise<boolean> => {
